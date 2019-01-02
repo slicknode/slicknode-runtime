@@ -140,6 +140,31 @@ describe('SlicknodeRuntime', () => {
     });
   });
 
+  it('throws auth error for missing auth header', async () => {
+    const moduleId = 'test-module';
+    const handler = 'sync-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, {
+      Authorization: getAuthHeaders({body, secret}).Authorization,
+    });
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Authorization failed: Header x-slicknode-timestamp is missing',
+      },
+    });
+  });
+
   it('checks clock drift in the future', async () => {
     const moduleId = 'test-module';
     const handler = 'sync-handler1';
@@ -223,5 +248,160 @@ describe('SlicknodeRuntime', () => {
         data: 'Hello myname',
       },
     });
+  });
+
+  it('catches errors in synchronous module handler', async () => {
+    const moduleId = 'test-module';
+    const handler = 'sync-exception-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Failing handler',
+      },
+    });
+  });
+
+  it('catches errors in asynchronous module handler', async () => {
+    const moduleId = 'test-module';
+    const handler = 'async-exception-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Failing handler',
+      },
+    });
+  });
+
+  it('catches errors outside of handler function', async () => {
+    const moduleId = 'test-module';
+    const handler = 'error-handler';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Error loading handler "error-handler": Root level error',
+      },
+    });
+  });
+
+  it('catches syntax errors in required file', async () => {
+    const moduleId = 'test-module';
+    const handler = 'syntax-error';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Error loading handler "syntax-error": Unexpected identifier',
+      },
+    });
+  });
+
+  it('validates if module is provided', async () => {
+    const moduleId = 'test-module';
+    const handler = 'sync-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Invalid request body: No module provided',
+      },
+    });
+  });
+
+  it('validates if handler is provided', async () => {
+    const moduleId = 'test-module';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Invalid request body: No handler provided',
+      },
+    });
+  });
+
+  it('returns error for not found handler', async () => {
+    const moduleId = 'test-module';
+    const handler = 'unknown-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result.error.message).to.include(
+      'Error loading handler "unknown-handler1": Cannot find module ',
+    );
   });
 });

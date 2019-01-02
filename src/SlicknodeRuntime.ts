@@ -81,6 +81,7 @@ export class SlicknodeRuntime {
           })
           .catch((err: Error) => {
             // Errors in user code are considered valid output, so just pass success = false and the message
+            console.error(err); // tslint:disable-line no-console
             return {
               data: null as any,
               error: {
@@ -90,6 +91,7 @@ export class SlicknodeRuntime {
           });
       } catch (e) {
         // Errors in user code are considered valid output, so just pass success = false and the message
+        console.error(e); // tslint:disable-line no-console
         return {
           data: null,
           error: {
@@ -98,6 +100,7 @@ export class SlicknodeRuntime {
         };
       }
     } catch (e) {
+      console.error(e); // tslint:disable-line no-console
       return {
         data: null,
         error: {
