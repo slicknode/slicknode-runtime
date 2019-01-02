@@ -58,7 +58,7 @@ export class SlicknodeRuntime {
 
       // Check if module exists
       if (!this.modules.hasOwnProperty(request.module)) {
-        throw new Error(`Module ${request.module} is not registered in runtime`);
+        throw new Error(`Module "${request.module}" is not registered in runtime`);
       }
 
       let handler;

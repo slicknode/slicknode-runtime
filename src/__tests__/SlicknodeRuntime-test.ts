@@ -404,4 +404,72 @@ describe('SlicknodeRuntime', () => {
       'Error loading handler "unknown-handler1": Cannot find module ',
     );
   });
+
+  it('handles error for unregistered module', async () => {
+    const moduleId = 'unregistered-module';
+    const handler = 'async-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Module "unregistered-module" is not registered in runtime',
+      },
+    });
+  });
+
+  it('usses SLICKNODE_SECRET from process.env', async () => {
+    const moduleId = 'test-module';
+    const handler = 'sync-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    process.env.SLICKNODE_SECRET = secret;
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime();
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: {
+        data: 'Hello myname',
+      },
+    });
+  });
+
+  it('skips authorization if no secret is provided', async () => {
+    const moduleId = 'test-module';
+    const handler = 'sync-handler1';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    delete process.env.SLICKNODE_SECRET;
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime();
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: {
+        data: 'Hello myname',
+      },
+    });
+  });
 });
