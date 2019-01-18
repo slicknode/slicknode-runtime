@@ -39,9 +39,21 @@ export interface RuntimeContext<TSettings = SettingsValueMap> {
  * The payload that is passed to resolvers
  */
 export interface ResolverPayload<TArgs = {[name: string]: any}, TSource = any> {
+  /**
+   * The resolver event, for example 'resolve.Query.MyModule_fieldName'
+   */
   event: string;
+
+  /**
+   * The input arguments of the resolver
+   */
   args: TArgs;
-  source: TArgs;
+
+  /**
+   * The source object of the parent node. This contains the internal data,
+   * so external resolved values might differ, for example for global IDs.
+   */
+  source: TSource;
 }
 
 /**
