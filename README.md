@@ -17,7 +17,7 @@ runtime handlers in NodeJS.
 ## Usage
 
 ```javascript
-const SlicknodeRuntime = require('slicknode-runtime');
+const {SlicknodeRuntime} = require('slicknode-runtime');
 
 const runtime = new SlicknodeRuntime({
     // The secret key that requests are signed with by the Slicknode GraphQL server
@@ -41,7 +41,7 @@ runtime.register('@private/my-slicknode-module-id', 'commonjs-module-name');
 // request headers. Then return as HTTP response...
 //
 // For express for example:
-app.post('/', (req, res) => {
+app.post('/', async (req, res) => {
     const data = await runtime.execute(req.rawBody.toString(), req.headers);
     return res.json(data);
 });

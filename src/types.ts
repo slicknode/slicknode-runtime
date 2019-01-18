@@ -14,7 +14,7 @@ export interface RuntimeResponse<TData = any> {
  * Information about the request, settings for the module etc
  * that is passed to the function handler as second argument
  */
-export interface RuntimeContext {
+export interface RuntimeContext<TSettings = SettingsValueMap> {
   request: {
     /**
      * The IP address of the client
@@ -32,7 +32,16 @@ export interface RuntimeContext {
      */
     alias: string,
   };
-  settings: SettingsValueMap;
+  settings: TSettings;
+}
+
+/**
+ * The payload that is passed to resolvers
+ */
+export interface ResolverPayload<TArgs = {[name: string]: any}, TSource = any> {
+  event: string;
+  args: TArgs;
+  source: TArgs;
 }
 
 /**
