@@ -64,6 +64,14 @@ export class SlicknodeRuntime {
       let handler;
       try {
         handler = require(`${this.modules[request.module]}${request.handler}`);
+
+        // Check if we have exported object
+        if (typeof handler === 'object') {
+          handler = handler.default;
+        }
+        if (typeof handler !== 'function') {
+          throw new Error(`Expected a function to be exported, got ${typeof handler}`);
+        }
       } catch (e) {
         throw new Error(`Error loading handler "${request.handler}": ${e.message}`);
       }

@@ -472,4 +472,49 @@ describe('SlicknodeRuntime', () => {
       },
     });
   });
+
+  it('executes code in synchronous module handler with exports.default', async () => {
+    const moduleId = 'test-module';
+    const handler = 'exports-default';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: {
+        data: 'Hello myname',
+      },
+    });
+  });
+
+  it('throws error for missing export', async () => {
+    const moduleId = 'test-module';
+    const handler = 'missing-export';
+    const payload = {args: {name: 'myname'}};
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({secret});
+    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    expect(result).to.deep.equal({
+      data: null,
+      error: {
+        message: 'Error loading handler \"missing-export\": Expected a function to be exported, got undefined',
+      },
+    });
+  });
 });
