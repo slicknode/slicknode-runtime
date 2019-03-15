@@ -15,6 +15,18 @@ export interface RuntimeResponse<TData = any> {
  * that is passed to the function handler as second argument
  */
 export interface RuntimeContext<TSettings = SettingsValueMap> {
+  api: {
+    /**
+     * Temporary access token to be sent in the headers to the API
+     * Has role RUNTIME plus all roles of the user that made the initial request
+     */
+    accessToken: string,
+
+    /**
+     * The Slicknode GraphQL API endpoint
+     */
+    endpoint: string,
+  };
   request: {
     /**
      * The IP address of the client

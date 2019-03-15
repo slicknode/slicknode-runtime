@@ -4,6 +4,9 @@ import {SlicknodeRuntime} from '../SlicknodeRuntime';
 import {getAuthHeaders} from '../utils';
 
 const DUMMY_CONTEXT = {
+  api: {
+
+  },
   request: {
     ip: '127.0.0.1',
     id: '1234xyz',
