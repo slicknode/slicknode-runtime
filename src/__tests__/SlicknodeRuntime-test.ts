@@ -1,11 +1,13 @@
 import {expect} from 'chai';
 import path from 'path';
 import {SlicknodeRuntime} from '../SlicknodeRuntime';
+import {RuntimeContext} from '../types';
 import {getAuthHeaders} from '../utils';
 
-const DUMMY_CONTEXT = {
+const DUMMY_CONTEXT: RuntimeContext = {
   api: {
-
+    endpoint: 'http://localhost',
+    accessToken: 'xyz123',
   },
   request: {
     ip: '127.0.0.1',
