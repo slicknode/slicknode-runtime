@@ -101,3 +101,17 @@ export interface RuntimeRequest<TPayload = any> {
 export interface Headers {
   [name: string]: string;
 }
+
+export interface ResolvedGlobalId {
+  /**
+   * The internal ID as stored in the database
+   */
+  id: string;
+
+  /**
+   * The GraphQL type name
+   */
+  __typename: string;
+}
+
+export type Base64String = string;
