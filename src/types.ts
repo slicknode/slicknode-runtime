@@ -47,6 +47,40 @@ export interface RuntimeContext<TSettings = SettingsValueMap> {
   settings: TSettings;
 }
 
+export interface AfterMutationListenerPayload<
+  TData = {[name: string]: any},
+  TArgs = {[name: string]: any}
+> {
+  /**
+   * The event name, for example 'mutation.createUser.AFTER'
+   */
+  event: string;
+
+  /**
+   * The input arguments of the resolver
+   */
+  args: TArgs;
+
+  /**
+   * The data that is loaded via the listener query on the mutation payload
+   */
+  data: TData;
+}
+
+export interface BeforeMutationListenerPayload<
+  TArgs = {[name: string]: any}
+> {
+  /**
+   * The event name, for example 'mutation.createUser.AFTER'
+   */
+  event: string;
+
+  /**
+   * The input arguments of the resolver
+   */
+  args: TArgs;
+}
+
 /**
  * The payload that is passed to resolvers
  */
