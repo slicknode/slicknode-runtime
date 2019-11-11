@@ -41,8 +41,11 @@ runtime.register('@private/my-slicknode-module-id', 'commonjs-module-name');
 // request headers. Then return as HTTP response...
 //
 // For express for example:
+app.use(bodyParser.raw({
+  type: 'application/json',
+}));
 app.post('/', async (req, res) => {
-    const data = await runtime.execute(req.rawBody.toString(), req.headers);
+    const data = await runtime.execute(req.body.toString(), req.headers);
     return res.json(data);
 });
 ```
