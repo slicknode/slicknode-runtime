@@ -60,7 +60,7 @@ export class SlicknodeRuntime {
       const request = this.parseBody(body);
 
       // Check if module exists
-      if (!this.modules.hasOwnProperty(request.module)) {
+      if (!Object.prototype.hasOwnProperty.call(this.modules, request.module)) {
         throw new Error(
           `Module "${request.module}" is not registered in runtime`
         );
@@ -68,16 +68,11 @@ export class SlicknodeRuntime {
 
       let handler;
       try {
-        handler = await import(
-          `${this.modules[request.module]}${request.handler}`
-        );
+        handler = require(`${this.modules[request.module]}${request.handler}`);
 
         // Check if we have exported object
         if (typeof handler === 'object') {
           handler = handler.default;
-          if (typeof handler === 'object') {
-            handler = handler.default;
-          }
         }
         if (typeof handler !== 'function') {
           throw new Error(
@@ -147,7 +142,10 @@ export class SlicknodeRuntime {
       assert(typeof data.module === 'string', 'No module provided');
       assert(typeof data.handler === 'string', 'No handler provided');
       assert(typeof data.context === 'object', 'No context provided');
-      assert(data.hasOwnProperty('payload'), 'No payload provided');
+      assert(
+        Object.prototype.hasOwnProperty.call(data, 'payload'),
+        'No payload provided'
+      );
 
       return data;
     } catch (e) {
@@ -179,12 +177,17 @@ export class SlicknodeRuntime {
       );
 
       // Check if auth header exists
-      if (!lcHeaders.hasOwnProperty('authorization')) {
+      if (!Object.prototype.hasOwnProperty.call(lcHeaders, 'authorization')) {
         throw new Error('No authorization header found');
       }
 
       // Check if timestamp is set
-      if (!lcHeaders.hasOwnProperty('x-slicknode-timestamp')) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          lcHeaders,
+          'x-slicknode-timestamp'
+        )
+      ) {
         throw new Error('Header x-slicknode-timestamp is missing');
       }
       const timestamp = parseInt(lcHeaders['x-slicknode-timestamp'], 10);
