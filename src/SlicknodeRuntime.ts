@@ -1,9 +1,10 @@
 import assert from 'assert';
 import crypto from 'crypto';
-import {toPromise} from './utils';
+import { toPromise } from './utils';
 
 import {
-  Headers, RuntimeRequest,
+  Headers,
+  RuntimeRequest,
   RuntimeResponse,
   SlicknodeRuntimeOptions,
 } from './types';
@@ -14,7 +15,7 @@ export class SlicknodeRuntime {
   /**
    * A map of module IDs and their module paths
    */
-  private modules: {[moduleId: string]: string};
+  private modules: { [moduleId: string]: string };
 
   /**
    * Constructor
@@ -36,7 +37,9 @@ export class SlicknodeRuntime {
    * @param {string} modulePath The NodeJS resolved path
    */
   public register(moduleId: string, modulePath: string) {
-    this.modules[moduleId] = !modulePath.endsWith('/') ? `${modulePath}/` : modulePath;
+    this.modules[moduleId] = !modulePath.endsWith('/')
+      ? `${modulePath}/`
+      : modulePath;
   }
 
   /**
@@ -47,7 +50,7 @@ export class SlicknodeRuntime {
    */
   public async execute(
     body: string,
-    headers: Headers = {},
+    headers: Headers = {}
   ): Promise<RuntimeResponse> {
     try {
       // Check signature and auth headers
@@ -57,8 +60,10 @@ export class SlicknodeRuntime {
       const request = this.parseBody(body);
 
       // Check if module exists
-      if (!this.modules.hasOwnProperty(request.module)) {
-        throw new Error(`Module "${request.module}" is not registered in runtime`);
+      if (!Object.prototype.hasOwnProperty.call(this.modules, request.module)) {
+        throw new Error(
+          `Module "${request.module}" is not registered in runtime`
+        );
       }
 
       let handler;
@@ -70,10 +75,14 @@ export class SlicknodeRuntime {
           handler = handler.default;
         }
         if (typeof handler !== 'function') {
-          throw new Error(`Expected a function to be exported, got ${typeof handler}`);
+          throw new Error(
+            `Expected a function to be exported, got ${typeof handler}`
+          );
         }
       } catch (e) {
-        throw new Error(`Error loading handler "${request.handler}": ${e.message}`);
+        throw new Error(
+          `Error loading handler "${request.handler}": ${e.message}`
+        );
       }
 
       try {
@@ -133,7 +142,10 @@ export class SlicknodeRuntime {
       assert(typeof data.module === 'string', 'No module provided');
       assert(typeof data.handler === 'string', 'No handler provided');
       assert(typeof data.context === 'object', 'No context provided');
-      assert(data.hasOwnProperty('payload'), 'No payload provided');
+      assert(
+        Object.prototype.hasOwnProperty.call(data, 'payload'),
+        'No payload provided'
+      );
 
       return data;
     } catch (e) {
@@ -148,26 +160,34 @@ export class SlicknodeRuntime {
         // tslint:disable-next-line no-console
         console.warn(
           'WARNING: No secret set in runtime. Authorization is skipped and server is insecure. ' +
-          'Set the environment variable SLICKNODE_SECRET or pass the secret to the runtime.',
+            'Set the environment variable SLICKNODE_SECRET or pass the secret to the runtime.'
         );
         return;
       }
 
       // Extract auth headers case insensitive
-      const lcHeaders: Headers = Object.keys(headers).reduce((h: Headers, name: string) => {
-        return {
-          [name.toLowerCase()]: headers[name],
-          ...h,
-        };
-      }, {});
+      const lcHeaders: Headers = Object.keys(headers).reduce(
+        (h: Headers, name: string) => {
+          return {
+            [name.toLowerCase()]: headers[name],
+            ...h,
+          };
+        },
+        {}
+      );
 
       // Check if auth header exists
-      if (!lcHeaders.hasOwnProperty('authorization')) {
+      if (!Object.prototype.hasOwnProperty.call(lcHeaders, 'authorization')) {
         throw new Error('No authorization header found');
       }
 
       // Check if timestamp is set
-      if (!lcHeaders.hasOwnProperty('x-slicknode-timestamp')) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          lcHeaders,
+          'x-slicknode-timestamp'
+        )
+      ) {
         throw new Error('Header x-slicknode-timestamp is missing');
       }
       const timestamp = parseInt(lcHeaders['x-slicknode-timestamp'], 10);
@@ -177,7 +197,7 @@ export class SlicknodeRuntime {
       if (!timestamp || Math.abs(Date.now() / 1000 - timestamp) > clockDrift) {
         throw new Error(
           'The difference of the timestamp for the signature and the local server time exceed ' +
-          `the maximum allowed clock drift of ${clockDrift} seconds`,
+            `the maximum allowed clock drift of ${clockDrift} seconds`
         );
       }
 
@@ -189,16 +209,15 @@ export class SlicknodeRuntime {
       }
 
       // Calculate signature
-      const signedString = [
-        String(timestamp),
-        body,
-      ].join('\n');
+      const signedString = [String(timestamp), body].join('\n');
 
       const hmac = crypto.createHmac('sha256', secret);
       hmac.update(signedString);
       const calculatedSignature = hmac.digest('hex');
       if (calculatedSignature !== match[1]) {
-        throw new Error('Provided signature does not match the calculated signature for the request');
+        throw new Error(
+          'Provided signature does not match the calculated signature for the request'
+        );
       }
     } catch (e) {
       throw new Error(`Authorization failed: ${e.message}`);

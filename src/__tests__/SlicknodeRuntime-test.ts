@@ -1,8 +1,8 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import path from 'path';
-import {SlicknodeRuntime} from '../SlicknodeRuntime';
-import {RuntimeContext} from '../types';
-import {getAuthHeaders} from '../utils';
+import { SlicknodeRuntime } from '../SlicknodeRuntime';
+import { RuntimeContext } from '../types';
+import { getAuthHeaders } from '../utils';
 
 const DUMMY_CONTEXT: RuntimeContext = {
   api: {
@@ -27,8 +27,8 @@ describe('SlicknodeRuntime', () => {
 
   it('executes code in asynchronous module handler', async () => {
     const moduleId = 'test-module';
-    const handler = 'async-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'async-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -37,9 +37,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -49,8 +55,8 @@ describe('SlicknodeRuntime', () => {
 
   it('executes code in synchronous module handler', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -59,9 +65,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -71,8 +83,8 @@ describe('SlicknodeRuntime', () => {
 
   it('throws auth error for invalid signature', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -81,23 +93,27 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
     const result = await runtime.execute(body, {
-      ...getAuthHeaders({body: 'changed body', secret}),
+      ...getAuthHeaders({ body: 'changed body', secret }),
     });
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Authorization failed: Provided signature does not match the calculated signature for the request',
+        message:
+          'Authorization failed: Provided signature does not match the calculated signature for the request',
       },
     });
   });
 
   it('throws auth error for invalid auth header format', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -106,10 +122,13 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
     const result = await runtime.execute(body, {
-      ...getAuthHeaders({body: 'changed body', secret}),
+      ...getAuthHeaders({ body: 'changed body', secret }),
       Authorization: 'INVALID AUTH HEADER FORMAT',
     });
     expect(result).to.deep.equal({
@@ -122,8 +141,8 @@ describe('SlicknodeRuntime', () => {
 
   it('throws auth error for missing auth header', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -132,8 +151,11 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
     const result = await runtime.execute(body, {
       'X-Slicknode-Timestamp': '23458765',
     });
@@ -147,8 +169,8 @@ describe('SlicknodeRuntime', () => {
 
   it('throws auth error for missing auth header', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -157,23 +179,27 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
     const result = await runtime.execute(body, {
-      Authorization: getAuthHeaders({body, secret}).Authorization,
+      Authorization: getAuthHeaders({ body, secret }).Authorization,
     });
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Authorization failed: Header x-slicknode-timestamp is missing',
+        message:
+          'Authorization failed: Header x-slicknode-timestamp is missing',
       },
     });
   });
 
   it('checks clock drift in the future', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -182,17 +208,24 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
       body,
-      secret,
-      timestamp: Math.floor(Date.now() / 1000) + 150,
-    }));
+      getAuthHeaders({
+        body,
+        secret,
+        timestamp: Math.floor(Date.now() / 1000) + 150,
+      })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Authorization failed: The difference of the timestamp for the signature and the local server' +
+        message:
+          'Authorization failed: The difference of the timestamp for the signature and the local server' +
           ' time exceed the maximum allowed clock drift of 120 seconds',
       },
     });
@@ -200,8 +233,8 @@ describe('SlicknodeRuntime', () => {
 
   it('checks clock drift in the past', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -210,17 +243,24 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
       body,
-      secret,
-      timestamp: Math.floor(Date.now() / 1000) - 150,
-    }));
+      getAuthHeaders({
+        body,
+        secret,
+        timestamp: Math.floor(Date.now() / 1000) - 150,
+      })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Authorization failed: The difference of the timestamp for the signature and the local server' +
+        message:
+          'Authorization failed: The difference of the timestamp for the signature and the local server' +
           ' time exceed the maximum allowed clock drift of 120 seconds',
       },
     });
@@ -228,8 +268,8 @@ describe('SlicknodeRuntime', () => {
 
   it('uses options for clock drift setting', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -242,12 +282,18 @@ describe('SlicknodeRuntime', () => {
       secret,
       maxClockDrift: 200,
     });
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
       body,
-      secret,
-      timestamp: Math.floor(Date.now() / 1000) - 150,
-    }));
+      getAuthHeaders({
+        body,
+        secret,
+        timestamp: Math.floor(Date.now() / 1000) - 150,
+      })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -257,8 +303,8 @@ describe('SlicknodeRuntime', () => {
 
   it('catches errors in synchronous module handler', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-exception-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-exception-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -267,9 +313,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
@@ -280,8 +332,8 @@ describe('SlicknodeRuntime', () => {
 
   it('catches errors in asynchronous module handler', async () => {
     const moduleId = 'test-module';
-    const handler = 'async-exception-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'async-exception-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -290,9 +342,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
@@ -303,8 +361,8 @@ describe('SlicknodeRuntime', () => {
 
   it('catches errors outside of handler function', async () => {
     const moduleId = 'test-module';
-    const handler = 'error-handler';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'error-handler.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -313,21 +371,27 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Error loading handler "error-handler": Root level error',
+        message: 'Error loading handler "error-handler.cjs": Root level error',
       },
     });
   });
 
   it('catches syntax errors in required file', async () => {
     const moduleId = 'test-module';
-    const handler = 'syntax-error';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'syntax-error.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -336,21 +400,28 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
-        message: 'Error loading handler "syntax-error": Unexpected identifier',
+        message:
+          'Error loading handler "syntax-error.cjs": Unexpected identifier',
       },
     });
   });
 
   it('validates if module is provided', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       handler,
@@ -358,9 +429,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
@@ -371,7 +448,7 @@ describe('SlicknodeRuntime', () => {
 
   it('validates if handler is provided', async () => {
     const moduleId = 'test-module';
-    const payload = {args: {name: 'myname'}};
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -379,9 +456,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
@@ -393,7 +476,7 @@ describe('SlicknodeRuntime', () => {
   it('returns error for not found handler', async () => {
     const moduleId = 'test-module';
     const handler = 'unknown-handler1';
-    const payload = {args: {name: 'myname'}};
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -402,18 +485,24 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result.error.message).to.include(
-      'Error loading handler "unknown-handler1": Cannot find module ',
+      'Error loading handler "unknown-handler1": Cannot find module '
     );
   });
 
   it('handles error for unregistered module', async () => {
     const moduleId = 'unregistered-module';
     const handler = 'async-handler1';
-    const payload = {args: {name: 'myname'}};
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -422,8 +511,11 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: null,
       error: {
@@ -434,8 +526,8 @@ describe('SlicknodeRuntime', () => {
 
   it('usses SLICKNODE_SECRET from process.env', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     process.env.SLICKNODE_SECRET = secret;
     const body = JSON.stringify({
@@ -446,8 +538,14 @@ describe('SlicknodeRuntime', () => {
     });
 
     const runtime = new SlicknodeRuntime();
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -457,8 +555,8 @@ describe('SlicknodeRuntime', () => {
 
   it('skips authorization if no secret is provided', async () => {
     const moduleId = 'test-module';
-    const handler = 'sync-handler1';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'sync-handler1.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     delete process.env.SLICKNODE_SECRET;
     const body = JSON.stringify({
@@ -469,8 +567,14 @@ describe('SlicknodeRuntime', () => {
     });
 
     const runtime = new SlicknodeRuntime();
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -480,8 +584,8 @@ describe('SlicknodeRuntime', () => {
 
   it('executes code in synchronous module handler with exports.default', async () => {
     const moduleId = 'test-module';
-    const handler = 'exports-default';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'exports-default.cjs';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -490,9 +594,15 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
       data: {
         data: 'Hello myname',
@@ -500,10 +610,10 @@ describe('SlicknodeRuntime', () => {
     });
   });
 
-  it('throws error for missing export', async () => {
+  it('executes code in synchronous handler with ESM module', async () => {
     const moduleId = 'test-module';
-    const handler = 'missing-export';
-    const payload = {args: {name: 'myname'}};
+    const handler = 'esm-module-sync';
+    const payload = { args: { name: 'myname' } };
     const secret = 'somesecret';
     const body = JSON.stringify({
       module: moduleId,
@@ -512,14 +622,74 @@ describe('SlicknodeRuntime', () => {
       context: DUMMY_CONTEXT,
     });
 
-    const runtime = new SlicknodeRuntime({secret});
-    runtime.register(moduleId, path.resolve(__dirname, './testmodules/module-a'));
-    const result = await runtime.execute(body, getAuthHeaders({body, secret}));
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
     expect(result).to.deep.equal({
-      data: null,
-      error: {
-        message: 'Error loading handler \"missing-export\": Expected a function to be exported, got undefined',
+      data: {
+        data: 'esm sync call',
       },
     });
+  });
+
+  it('executes code in asynchronous handler with ESM module', async () => {
+    const moduleId = 'test-module';
+    const handler = 'esm-module-async';
+    const payload = { args: { name: 'myname' } };
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
+    expect(result).to.deep.equal({
+      data: {
+        data: 'esm async call',
+      },
+    });
+  });
+
+  it('throws error for missing export', async () => {
+    const moduleId = 'test-module';
+    const handler = 'missing-export';
+    const payload = { args: { name: 'myname' } };
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
+    expect(result.data).to.equal(null);
+    expect(result.error.message).to.include(
+      'Error loading handler "missing-export": Expected a function to be exported, got undefined'
+    );
   });
 });
