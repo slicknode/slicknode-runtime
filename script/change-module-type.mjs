@@ -5,15 +5,9 @@ import * as path from 'path';
 // with ESM imports:
 (async () => {
   const [node, script, type] = process.argv;
-  console.log('Arg', type);
-  if (!type) {
-    throw new Error('No module type provided as arg');
-  }
 
-  const content = JSON.parse(
-    fs
-      .readFileSync(path.resolve(path.join(path.dirname(''), 'package.json')))
-      .toString()
-  );
+  const file = path.resolve(path.join(path.dirname(''), 'package.json'));
+  const content = JSON.parse(fs.readFileSync(file).toString());
   const newContent = JSON.stringify({ ...content, type }, null, 2);
+  fs.writeFileSync(file, newContent + '\n');
 })();

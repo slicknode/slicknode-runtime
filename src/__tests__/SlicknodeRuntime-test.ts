@@ -610,7 +610,7 @@ describe('SlicknodeRuntime', () => {
     });
   });
 
-  it('executes code in synchronous module handler with ESM module', async () => {
+  it('executes code in synchronous handler with ESM module', async () => {
     const moduleId = 'test-module';
     const handler = 'esm-module-sync';
     const payload = { args: { name: 'myname' } };
@@ -633,7 +633,35 @@ describe('SlicknodeRuntime', () => {
     );
     expect(result).to.deep.equal({
       data: {
-        data: 'Hello myname',
+        data: 'esm sync call',
+      },
+    });
+  });
+
+  it('executes code in asynchronous handler with ESM module', async () => {
+    const moduleId = 'test-module';
+    const handler = 'esm-module-async';
+    const payload = { args: { name: 'myname' } };
+    const secret = 'somesecret';
+    const body = JSON.stringify({
+      module: moduleId,
+      handler,
+      payload,
+      context: DUMMY_CONTEXT,
+    });
+
+    const runtime = new SlicknodeRuntime({ secret });
+    runtime.register(
+      moduleId,
+      path.resolve(__dirname, './testmodules/module-a')
+    );
+    const result = await runtime.execute(
+      body,
+      getAuthHeaders({ body, secret })
+    );
+    expect(result).to.deep.equal({
+      data: {
+        data: 'esm async call',
       },
     });
   });
