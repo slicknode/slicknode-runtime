@@ -1,12 +1,15 @@
 export interface SlicknodeRuntimeOptions {
   secret?: string;
   maxClockDrift?: number;
+  // Watch for file-system changes automatically. Reloads modules automatically on each request (for dev mode only).
+  // Executes handler code in service worker.
+  watch?: boolean;
 }
 
 export interface RuntimeResponse<TData = any> {
   data?: TData;
   error?: {
-    message: string,
+    message: string;
   };
 }
 
@@ -20,36 +23,36 @@ export interface RuntimeContext<TSettings = SettingsValueMap> {
      * Temporary access token to be sent in the headers to the API
      * Has role RUNTIME plus all roles of the user that made the initial request
      */
-    accessToken: string,
+    accessToken: string;
 
     /**
      * The Slicknode GraphQL API endpoint
      */
-    endpoint: string,
+    endpoint: string;
   };
   request: {
     /**
      * The IP address of the client
      */
-    ip: string,
+    ip: string;
 
     /**
      * The unique request id as UUID string
      */
-    id: string,
+    id: string;
   };
   project: {
     /**
      * The project alias
      */
-    alias: string,
+    alias: string;
   };
   settings: TSettings;
 }
 
 export interface AfterMutationListenerPayload<
-  TData = {[name: string]: any},
-  TArgs = {[name: string]: any}
+  TData = { [name: string]: any },
+  TArgs = { [name: string]: any }
 > {
   /**
    * The event name, for example 'mutation.createUser.AFTER'
@@ -68,7 +71,7 @@ export interface AfterMutationListenerPayload<
 }
 
 export interface BeforeMutationListenerPayload<
-  TArgs = {[name: string]: any}
+  TArgs = { [name: string]: any }
 > {
   /**
    * The event name, for example 'mutation.createUser.AFTER'
@@ -84,7 +87,10 @@ export interface BeforeMutationListenerPayload<
 /**
  * The payload that is passed to resolvers
  */
-export interface ResolverPayload<TArgs = {[name: string]: any}, TSource = any> {
+export interface ResolverPayload<
+  TArgs = { [name: string]: any },
+  TSource = any
+> {
   /**
    * The resolver event, for example 'resolve.Query.MyModule_fieldName'
    */
