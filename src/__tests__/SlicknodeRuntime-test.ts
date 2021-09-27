@@ -3,6 +3,10 @@ import path from 'path';
 import { SlicknodeRuntime } from '../SlicknodeRuntime';
 import { RuntimeContext } from '../types';
 import { getAuthHeaders } from '../utils';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const DUMMY_CONTEXT: RuntimeContext = {
   api: {
