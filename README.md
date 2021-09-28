@@ -1,5 +1,7 @@
 # Slicknode Runtime
 
+**IMPORTANT:** This library should be considered an implementation detail and should not be used directly. Please consult the [Slicknode documentation](https://slicknode.com/docs/) on how to create and write runtime handlers.
+
 Lightweight zero dependency wrapper to process calls from Slicknode GraphQL servers to custom
 runtime handlers in NodeJS.
 
@@ -15,6 +17,8 @@ runtime handlers in NodeJS.
     npm install slicknode-runtime
 
 ## Usage
+
+This library is intended to be used with [Slicknode]()
 
 ```javascript
 const { SlicknodeRuntime } = require('slicknode-runtime');
