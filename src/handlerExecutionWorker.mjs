@@ -14,7 +14,7 @@ async function handlerExecutionWorker({ modulePath, args }) {
   let result;
   if (typeof handler !== 'function') {
     throw new Error(
-      `Runtime expectes module "${modulePath}" to export a function as default export, got "${typeof handler}"`
+      `Runtime expects module "${modulePath}" to export a function as default export, got "${typeof handler}"`
     );
   } else {
     result = await handler(...args);

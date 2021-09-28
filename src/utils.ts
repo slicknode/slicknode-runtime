@@ -6,7 +6,6 @@
  */
 import crypto from 'crypto';
 import { Base64String, Headers, ResolvedGlobalId } from './types';
-import * as url from 'url';
 
 export function toPromise(value: any) {
   if (
