@@ -1,6 +1,6 @@
 import { Worker } from 'worker_threads';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -42,7 +42,7 @@ export async function createHandler(params: {
     };
   } else {
     // Directly return imported function
-    const importedModule = await import(modulePath);
+    const importedModule = await import(pathToFileURL(modulePath).href);
     let exportedHandler =
       typeof importedModule === 'function'
         ? importedModule

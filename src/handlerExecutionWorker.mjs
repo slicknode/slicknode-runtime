@@ -1,4 +1,5 @@
 import { workerData, parentPort } from 'worker_threads';
+import { pathToFileURL } from 'url';
 
 // Prevent direct execution
 if (!workerData) {
@@ -6,7 +7,7 @@ if (!workerData) {
 }
 
 async function handlerExecutionWorker({ modulePath, args }) {
-  let handler = (await import(modulePath)).default;
+  let handler = (await import(pathToFileURL(modulePath).href)).default;
   if (typeof handler === 'object') {
     handler = handler.default;
   }
