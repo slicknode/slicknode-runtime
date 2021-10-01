@@ -21,7 +21,7 @@ runtime handlers in NodeJS.
 This library is intended to be used with [Slicknode]()
 
 ```javascript
-const { SlicknodeRuntime } = require('slicknode-runtime');
+import { SlicknodeRuntime } from 'slicknode-runtime';
 
 const runtime = new SlicknodeRuntime({
   // The secret key that requests are signed with by the Slicknode GraphQL server
