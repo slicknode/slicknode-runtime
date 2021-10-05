@@ -1,11 +1,8 @@
-import {expect} from 'chai';
-import DefaultExport from '../index';
-import * as AllExports from '../index';
-import {SlicknodeRuntime} from '../SlicknodeRuntime';
-import {
-  fromGlobalId,
-  toGlobalId,
-} from '../utils';
+import { expect } from 'chai';
+import DefaultExport from '../index.js';
+import * as AllExports from '../index.js';
+import { SlicknodeRuntime } from '../SlicknodeRuntime.js';
+import { fromGlobalId, toGlobalId } from '../utils.js';
 
 describe('index', () => {
   it('exports SlicknodeRuntime', () => {

@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import path from 'path';
-import { SlicknodeRuntime } from '../SlicknodeRuntime';
-import { RuntimeContext } from '../types';
-import { getAuthHeaders } from '../utils';
+import { SlicknodeRuntime } from '../SlicknodeRuntime.js';
+import { RuntimeContext } from '../types.js';
+import { getAuthHeaders } from '../utils.js';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -616,7 +616,7 @@ describe('SlicknodeRuntime', () => {
 
       it('executes code in synchronous handler with ESM module', async () => {
         const moduleId = 'test-module';
-        const handler = 'esm-module-sync';
+        const handler = 'esm-module-sync.js';
         const payload = { args: { name: 'myname' } };
         const secret = 'somesecret';
         const body = JSON.stringify({
@@ -644,7 +644,7 @@ describe('SlicknodeRuntime', () => {
 
       it('executes code in asynchronous handler with ESM module', async () => {
         const moduleId = 'test-module';
-        const handler = 'esm-module-async';
+        const handler = 'esm-module-async.js';
         const payload = { args: { name: 'myname' } };
         const secret = 'somesecret';
         const body = JSON.stringify({
