@@ -5,7 +5,7 @@
  * @returns {any}
  */
 import crypto from 'crypto';
-import { Base64String, Headers, ResolvedGlobalId } from './types';
+import { Base64String, Headers, ResolvedGlobalId } from './types.js';
 
 export function toPromise(value: any) {
   if (

@@ -1,5 +1,5 @@
-import {expect} from 'chai';
-import {fromGlobalId, toGlobalId} from '../utils';
+import { expect } from 'chai';
+import { fromGlobalId, toGlobalId } from '../utils.js';
 
 describe('utils', () => {
   describe('toGlobalId', () => {

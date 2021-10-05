@@ -1,11 +1,8 @@
 export {
   SlicknodeRuntime as default,
   SlicknodeRuntime,
-} from './SlicknodeRuntime';
+} from './SlicknodeRuntime.js';
 
-export * from './types';
+export * from './types.js';
 
-export {
-  fromGlobalId,
-  toGlobalId,
-} from './utils';
+export { fromGlobalId, toGlobalId } from './utils.js';

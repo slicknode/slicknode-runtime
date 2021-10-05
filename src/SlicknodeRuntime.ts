@@ -1,14 +1,14 @@
 import assert from 'assert';
 import crypto from 'crypto';
-import { toPromise } from './utils';
+import { toPromise } from './utils.js';
 
 import {
   Headers,
   RuntimeRequest,
   RuntimeResponse,
   SlicknodeRuntimeOptions,
-} from './types';
-import { createHandler } from './createHandler';
+} from './types.js';
+import { createHandler } from './createHandler.js';
 
 export class SlicknodeRuntime {
   private options: SlicknodeRuntimeOptions;
