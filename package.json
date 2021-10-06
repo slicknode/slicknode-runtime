@@ -20,7 +20,7 @@
     "testonly": "npm run build:test && npm run copy-test-files && mocha --require esm 'dist/**/__tests__/**/*-test.js'",
     "testonly:cover": "nyc --reporter html --reporter text-summary -- npm run testonly",
     "testonly:coveralls": "nyc --silent -- npm run testonly && nyc report --reporter text-lcov | coveralls",
-    "dist": "npm run clean && tsc",
+    "dist": "npm run clean && tsc && npm run copy-files",
     "prepare": "npm run clean && npm run dist"
   },
   "directories": {
