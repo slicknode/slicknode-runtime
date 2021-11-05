@@ -1,7 +1,8 @@
 import assert from 'assert';
 import crypto from 'crypto';
+import path from 'path';
 import { toPromise } from './utils.js';
-
+import { createRequire } from 'module';
 import {
   Headers,
   RuntimeRequest,
@@ -9,6 +10,8 @@ import {
   SlicknodeRuntimeOptions,
 } from './types.js';
 import { createHandler } from './createHandler.js';
+
+const require = createRequire(import.meta.url);
 
 export class SlicknodeRuntime {
   private options: SlicknodeRuntimeOptions;
@@ -37,10 +40,11 @@ export class SlicknodeRuntime {
    * @param {string} moduleId The slicknode module ID
    * @param {string} modulePath The NodeJS resolved path
    */
-  public register(moduleId: string, modulePath: string) {
-    this.modules[moduleId] = !modulePath.endsWith('/')
-      ? `${modulePath}/`
-      : modulePath;
+  public register(moduleId: string, modulePath: string): void {
+    const moduleRoot = path.dirname(
+      require.resolve(path.join(modulePath, 'package.json'))
+    );
+    this.modules[moduleId] = `${moduleRoot}/`;
   }
 
   /**
